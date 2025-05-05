@@ -10,12 +10,13 @@
 
 class ScalarConverter {
 public:
-    static void convert(const std::string &literal);
-private:
+
     ScalarConverter(); // Prevent instantiation
     ~ScalarConverter();
-    ScalarConverter(const ScalarConverter &);
-    ScalarConverter &operator=(const ScalarConverter &);
+    ScalarConverter(const ScalarConverter &other);
+    ScalarConverter &operator=(const ScalarConverter &other);
+
+    static void convert(const std::string &literal);    
 };
 
 #endif
