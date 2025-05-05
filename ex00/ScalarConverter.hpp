@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include <iomanip>
 #include <cmath>
+#include <stdexcept>
 
 class ScalarConverter {
 public:
@@ -18,5 +19,21 @@ public:
 
     static void convert(const std::string &literal);    
 };
+
+
+
+// Custom exception class for invalid conversion
+class ConversionException : public std::exception {
+public:
+    ConversionException(const std::string& message) : msg(message) {}
+    
+    const char* what() const noexcept override {
+        return msg.c_str();
+    }
+
+private:
+    std::string msg;
+};
+
 
 #endif

@@ -48,67 +48,75 @@ void ScalarConverter::convert(const std::string& literal) {
     float floatVal;
     double doubleVal;
 
-    if (isPseudoLiteral(literal)) {
-        std::cout << "char: impossible\n";
-        std::cout << "int: impossible\n";
+    try {
+        // Check if it's a pseudo literal
+        if (isPseudoLiteral(literal)) {
+            std::cout << "char: impossible\n";
+            std::cout << "int: impossible\n";
 
-        if (isFloatPseudoLiteral(literal)) {
-            std::cout << "float: " << literal << "\n";
-            std::cout << "double: " << literal.substr(0, literal.length() - 1) << "\n";
-        } else {
-            std::cout << "float: " << literal << "f\n";
-            std::cout << "double: " << literal << "\n";
+            if (isFloatPseudoLiteral(literal)) {
+                std::cout << "float: " << literal << "\n";
+                std::cout << "double: " << literal.substr(0, literal.length() - 1) << "\n";
+            } else {
+                std::cout << "float: " << literal << "f\n";
+                std::cout << "double: " << literal << "\n";
+            }
+            return;
         }
-        return;
-    }
 
-    char* endPtr = NULL;
-    errno = 0;
-    doubleVal = std::strtod(literal.c_str(), &endPtr);
+        char* endPtr = NULL;
+        errno = 0;
+        doubleVal = std::strtod(literal.c_str(), &endPtr);
 
-    // Check if it's a single displayable char
-    if (literal.length() == 1 && !std::isdigit(literal[0])) {
-        charVal = literal[0];
-        intVal = static_cast<int>(charVal);
-        floatVal = static_cast<float>(charVal);
-        doubleVal = static_cast<double>(charVal);
+        // Check if it's a single displayable char
+        if (literal.length() == 1 && !std::isdigit(literal[0])) {
+            charVal = literal[0];
+            intVal = static_cast<int>(charVal);
+            floatVal = static_cast<float>(charVal);
+            doubleVal = static_cast<double>(charVal);
 
-        std::cout << "char: '" << charVal << "'\n";
-        std::cout << "int: " << intVal << "\n";
+            std::cout << "char: '" << charVal << "'\n";
+            std::cout << "int: " << intVal << "\n";
+            printFloat(doubleVal);
+            printDouble(doubleVal);
+            return;
+        }
+
+        // Conversion failed if nothing consumed
+        if ((*endPtr && *endPtr != 'f') || (endPtr[0] && endPtr[1])) {
+            throw ConversionException("char: impossible\nint: impossible\nfloat: impossible\ndouble: impossible");
+        }
+
+        intVal = static_cast<int>(doubleVal);
+        floatVal = static_cast<float>(doubleVal);
+        charVal = static_cast<char>(intVal);
+
+        // Print char
+        if (intVal >= 0 && intVal <= 127) {
+            if (std::isprint(charVal))
+                std::cout << "char: '" << charVal << "'\n";
+            else
+                std::cout << "char: Non displayable\n";
+        } else {
+            std::cout << "char: impossible\n";
+        }
+
+        // Print int
+        if (doubleVal >= static_cast<double>(std::numeric_limits<int>::min()) &&
+            doubleVal <= static_cast<double>(std::numeric_limits<int>::max())) {
+            std::cout << "int: " << intVal << "\n";
+        } else {
+            std::cout << "int: impossible\n";
+        }
+
+        // Print float and double
         printFloat(doubleVal);
         printDouble(doubleVal);
-        return;
+
+    } catch (const ConversionException& e) {
+        std::cout << e.what() << "\n";
+    } catch (const std::exception& e) {
+        // Catch any other standard exceptions
+        std::cout << "Error: " << e.what() << "\n";
     }
-
-
-    // Conversion failed if nothing consumed
-    if ((*endPtr && *endPtr != 'f') || (endPtr[0] && endPtr[1])) {
-        std::cout << "char: impossible\nint: impossible\nfloat: impossible\ndouble: impossible\n";
-        return;
-    }
-    intVal = static_cast<int>(doubleVal);
-    floatVal = static_cast<float>(doubleVal);
-    charVal = static_cast<char>(intVal);
-
-    // Print char
-    if (intVal >= 0 && intVal <= 127) {
-        if (std::isprint(charVal))
-            std::cout << "char: '" << charVal << "'\n";
-        else
-            std::cout << "char: Non displayable\n";
-    } else {
-        std::cout << "char: impossible\n";
-    }
-
-    // Print int
-    if (doubleVal >= static_cast<double>(std::numeric_limits<int>::min()) &&
-        doubleVal <= static_cast<double>(std::numeric_limits<int>::max())) {
-        std::cout << "int: " << intVal << "\n";
-    } else {
-        std::cout << "int: impossible\n";
-    }
-
-    // Print float and double
-    printFloat(doubleVal);
-    printDouble(doubleVal);
 }
