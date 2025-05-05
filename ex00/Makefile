@@ -1,4 +1,4 @@
-NAME = Converter
+NAME = convert
 CC = c++
 CFLAGS = -Wall -Wextra -Werror -std=c++11
 

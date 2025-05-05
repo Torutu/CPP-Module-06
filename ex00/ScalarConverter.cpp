@@ -1,5 +1,7 @@
 #include "ScalarConverter.hpp"
 
+
+
 ScalarConverter::ScalarConverter() {}
 ScalarConverter::~ScalarConverter() {}
 ScalarConverter::ScalarConverter(const ScalarConverter &) {}
@@ -108,7 +110,7 @@ void ScalarConverter::convert(const std::string& literal) {
         } else {
             std::cout << "int: impossible\n";
         }
-
+    
         // Print float and double
         printFloat(doubleVal);
         printDouble(doubleVal);
